@@ -9,12 +9,14 @@ from tabulate import tabulate
 
 def convert_tables_to_md(pdf_file_name: Text):
     """Convert pdf table to markdown and save as markdown file."""
-    filename = os.path.splitext(pdf_file_name)[0]
 
+    filename = os.path.splitext(pdf_file_name)[0]
     print('Converting', pdf_file_name, '...')
 
+    # Use Camelot to extract tables
     tables = camelot.read_pdf(pdf_file_name,
                               pages='all')
+
     for i in range(len(tables)):
         df = tables[i].df
 
@@ -33,10 +35,13 @@ def convert_tables_to_md(pdf_file_name: Text):
         md = tabulate(df, tablefmt='github', headers='keys', showindex=False) + '\n'
 
         print('Saving table', str(i) + '...')
-
         output_dir = sys.argv[2] if len(sys.argv) == 3 else None
         output_file_suffix = 'table_' + str(i) + '.md'
+        output_file_path = (os.path.join(output_dir, os.path.split(filename)[1] + '_' + output_file_suffix)
+                            if output_dir is not None
+                            else os.path.join(filename, 'tables', output_file_suffix))
 
+        # Create output directories
         if output_dir is None:
             if not os.path.exists(filename):
                 os.makedirs(filename)
@@ -46,14 +51,7 @@ def convert_tables_to_md(pdf_file_name: Text):
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
 
-        # Save as markdown
-        output_dir = sys.argv[2] if len(sys.argv) == 3 else None
-        output_file_suffix = 'table_' + str(i) + '.md'
-        output_file_path = (os.path.join(output_dir,
-                                         os.path.split(filename)[1] + '_' + output_file_suffix) if output_dir is not None
-                               else os.path.join(filename, 'tables',
-                                                 output_file_suffix))
-
+        # Save tables
         with open(output_file_path, 'w') as md_file:
             md_file.write(md)
 
