@@ -6,6 +6,7 @@ from typing import Text
 import camelot
 import pandas as pd
 
+from tabulate import tabulate
 
 def convert_tables_to_md(pdf_file_name: Text):
     """Convert pdf table to markdown and save as markdown file."""
@@ -30,9 +31,7 @@ def convert_tables_to_md(pdf_file_name: Text):
         df = df.replace('', '&#xfeff;', regex=True)
 
         # Convert table to markdown
-        cols = df.columns  # Get column names
-        df2 = pd.DataFrame([['---', ]*len(cols)], columns=cols)  # Create a new DataFrame with just the markdown strings
-        df3 = pd.concat([df2, df])  # Create a new concatenated DataFrame
+        md = tabulate(df, tablefmt='github', headers='keys', showindex=False ) + '\n'
 
         print('Saving table', str(i) + '...')
 
@@ -41,7 +40,9 @@ def convert_tables_to_md(pdf_file_name: Text):
         if not os.path.exists(os.path.join(md_file_name, 'tables')):
             os.makedirs(os.path.join(md_file_name, 'tables'))
 
-        df3.to_csv(os.path.join(md_file_name, 'tables', 'table_' + str(i) + ".md"), sep="|", index=False)  # Save as markdown
+        # Save as markdown
+        with open(os.path.join(md_file_name, 'tables', 'table_' + str(i) + '.md'), 'w') as md_file:
+            md_file.write(md)
 
 
 def is_pdf(filename: Text) -> bool:
