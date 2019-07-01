@@ -9,9 +9,9 @@ from tabulate import tabulate
 
 def convert_tables_to_md(pdf_file_name: Text):
     """Convert pdf table to markdown and save as markdown file."""
+    output_file_name = os.path.splitext(pdf_file_name)[0]
 
     print('Converting', pdf_file_name, '...')
-    md_file_name = os.path.splitext(pdf_file_name)[0]
 
     tables = camelot.read_pdf(pdf_file_name,
                               pages='all')
@@ -34,19 +34,19 @@ def convert_tables_to_md(pdf_file_name: Text):
 
         print('Saving table', str(i) + '...')
 
-        if not os.path.exists(md_file_name):
-            os.makedirs(md_file_name)
-        if not os.path.exists(os.path.join(md_file_name, 'tables')):
-            os.makedirs(os.path.join(md_file_name, 'tables'))
+        if not os.path.exists(output_file_name):
+            os.makedirs(output_file_name)
+        if not os.path.exists(os.path.join(output_file_name, 'tables')):
+            os.makedirs(os.path.join(output_file_name, 'tables'))
 
         # Save as markdown
         output_dir = sys.argv[2] if len(sys.argv) == 3 else None
         output_file_suffix = 'table_' + str(i) + '.md'
-        output_file_name = (
-            os.path.join(output_dir, os.path.split(md_file_name)[1] + '_' + output_file_suffix) if output_dir is not None
-            else os.path.join(md_file_name, 'tables', output_file_suffix)
+        output_file_path = (
+            os.path.join(output_dir, os.path.split(output_file_name)[1] + '_' + output_file_suffix) if output_dir is not None
+            else os.path.join(output_file_name, 'tables', output_file_suffix)
         )
-        with open(output_file_name, 'w') as md_file:
+        with open(output_file_path, 'w') as md_file:
             md_file.write(md)
 
 
