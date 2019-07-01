@@ -35,14 +35,18 @@ def convert_tables_to_md(pdf_file_name: Text):
 
         print('Saving table', str(i) + '...')
 
-        if not os.path.exists(md_file_name):
-            os.makedirs(md_file_name)
-        if not os.path.exists(os.path.join(md_file_name, 'tables')):
-            os.makedirs(os.path.join(md_file_name, 'tables'))
-
-        # Save as markdown
         output_dir = sys.argv[2] if len(sys.argv) == 3 else None
         output_file_suffix = 'table_' + str(i) + '.md'
+        if output_dir is None:
+            if not os.path.exists(md_file_name):
+                os.makedirs(md_file_name)
+            if not os.path.exists(os.path.join(md_file_name, 'tables')):
+                os.makedirs(os.path.join(md_file_name, 'tables'))
+        else:
+            if not os.path.exists(output_dir):
+                os.makedirs(output_dir)
+ 
+        # Save as markdown
         output_file_name = (
             os.path.join(output_dir, os.path.split(md_file_name)[1] + '_' + output_file_suffix) if output_dir is not None
             else os.path.join(md_file_name, 'tables', output_file_suffix)
