@@ -4,9 +4,8 @@ import os
 from typing import Text
 
 import camelot
-import pandas as pd
-
 from tabulate import tabulate
+
 
 def convert_tables_to_md(pdf_file_name: Text):
     """Convert pdf table to markdown and save as markdown file."""
@@ -31,7 +30,7 @@ def convert_tables_to_md(pdf_file_name: Text):
         df = df.replace('', '&#xfeff;', regex=True)
 
         # Convert table to markdown
-        md = tabulate(df, tablefmt='github', headers='keys', showindex=False ) + '\n'
+        md = tabulate(df, tablefmt='github', headers='keys', showindex=False) + '\n'
 
         print('Saving table', str(i) + '...')
 
