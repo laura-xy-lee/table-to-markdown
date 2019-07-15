@@ -34,12 +34,14 @@ def convert_tables_to_md(pdf_file_name: Text):
         # Convert table to markdown
         md = tabulate(df, tablefmt='github', headers='keys', showindex=False) + '\n'
 
-        print('Saving table', str(i) + '...')
-        output_dir = sys.argv[2] if len(sys.argv) == 3 else None
+        (input_dir, input_file) = os.path.split(filename)
+        output_dir = os.path.join(sys.argv[2], os.path.relpath(input_dir)) if len(sys.argv) == 3 else None
         output_file_suffix = 'table_' + str(i) + '.md'
-        output_file_path = (os.path.join(output_dir, os.path.split(filename)[1] + '_' + output_file_suffix)
+        output_file_path = (os.path.join(output_dir, input_file + '_' + output_file_suffix)
                             if output_dir is not None
                             else os.path.join(filename, 'tables', output_file_suffix))
+
+        print('Saving table', str(output_file_path) + '...')
 
         # Create output directories
         if output_dir is None:
