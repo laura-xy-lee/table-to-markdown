@@ -7,7 +7,7 @@ import camelot
 from tabulate import tabulate
 
 
-def convert_tables_to_md(pdf_file_name: Text):
+def convert_tables_to_md(pdf_file_name: Text, input_root_dir: Text):
     """Convert pdf table to markdown and save as markdown file."""
 
     filename = os.path.splitext(pdf_file_name)[0]
@@ -35,7 +35,7 @@ def convert_tables_to_md(pdf_file_name: Text):
         md = tabulate(df, tablefmt='github', headers='keys', showindex=False) + '\n'
 
         (input_dir, input_file) = os.path.split(filename)
-        output_dir = os.path.join(sys.argv[2], os.path.relpath(input_dir)) if len(sys.argv) == 3 else None
+        output_dir = os.path.join(sys.argv[2], os.path.relpath(input_dir, input_root_dir)) if len(sys.argv) == 3 else None
         output_file_suffix = 'table_' + str(i) + '.md'
         output_file_path = (os.path.join(output_dir, input_file + '_' + output_file_suffix)
                             if output_dir is not None
@@ -76,6 +76,6 @@ else:
             file_name = os.path.join(subdir, file)
             if is_pdf(filename=file_name):
                 try:
-                    convert_tables_to_md(pdf_file_name=file_name)
+                    convert_tables_to_md(pdf_file_name=file_name, input_root_dir=user_input)
                 except:
                     print('[ERROR] Conversion failed for', file_name)
