@@ -7,11 +7,12 @@ import camelot
 from tabulate import tabulate
 
 
-def convert_tables_to_md(pdf_file_name: Text, input_root_dir: Text):
+def convert_tables_to_md(pdf_file_name: Text,
+                         output_dir: Text = None,
+                         input_root_dir: Text = None):  # TODO: what does this do?
     """Convert pdf table to markdown and save as markdown file."""
-
-    filename = os.path.splitext(pdf_file_name)[0]
     print('Converting', pdf_file_name, '...')
+    pdf_file_name_without_ext = os.path.splitext(pdf_file_name)[0]
 
     # Use Camelot to extract tables
     tables = camelot.read_pdf(pdf_file_name,
@@ -34,26 +35,26 @@ def convert_tables_to_md(pdf_file_name: Text, input_root_dir: Text):
         # Convert table to markdown
         md = tabulate(df, tablefmt='github', headers='keys', showindex=False) + '\n'
 
-        (input_dir, input_file) = os.path.split(filename)
-        output_dir = os.path.join(sys.argv[2], os.path.relpath(input_dir, input_root_dir)) if len(sys.argv) == 3 else None
+        # Get output file path
+        (input_dir, input_file) = os.path.split(pdf_file_name_without_ext)
         output_file_suffix = 'table_' + str(i) + '.md'
-        output_file_path = (os.path.join(output_dir, input_file + '_' + output_file_suffix)
-                            if output_dir is not None
-                            else os.path.join(filename, 'tables', output_file_suffix))
-
-        print('Saving table', str(output_file_path) + '...')
-
-        # Create output directories
-        if output_dir is None:
-            if not os.path.exists(filename):
-                os.makedirs(filename)
-            if not os.path.exists(os.path.join(filename, 'tables')):
-                os.makedirs(os.path.join(filename, 'tables'))
-        else:
+        if output_dir:
+            # Create output dir
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
 
+            # Create output subdir
+            subdir = os.path.join(*input_dir.split(os.sep)[1:])
+            subdir_path = os.path.join(output_dir, subdir)
+            if not os.path.exists(subdir_path):
+                os.makedirs(subdir_path)
+
+            output_file_path = os.path.join(subdir_path, input_file + '_' + output_file_suffix)
+        else:
+            output_file_path = os.path.join(input_dir, input_file + '_' + output_file_suffix)
+
         # Save tables
+        print('Saving table', str(output_file_path) + '...')
         with open(output_file_path, 'w') as md_file:
             md_file.write(md)
 
@@ -63,19 +64,21 @@ def is_pdf(filename: Text) -> bool:
     return os.path.splitext(filename)[1] == '.pdf'
 
 
-user_input = sys.argv[1]
+# Get user input
+user_input_pdf_path = sys.argv[1]
+user_output_md_path = sys.argv[2] if len(sys.argv) == 3 else None
 
-if is_pdf(user_input):
+if is_pdf(user_input_pdf_path):
     try:
-        convert_tables_to_md(pdf_file_name=user_input)
+        convert_tables_to_md(pdf_file_name=user_input_pdf_path)
     except:
-        print('[ERROR] Conversion failed for', user_input)
+        print('[ERROR] Conversion failed for', user_input_pdf_path)
 else:
-    for subdir, dirs, files in os.walk(user_input):
+    for subdir, dirs, files in os.walk(user_input_pdf_path):
         for file in files:
             file_name = os.path.join(subdir, file)
             if is_pdf(filename=file_name):
                 try:
-                    convert_tables_to_md(pdf_file_name=file_name, input_root_dir=user_input)
+                    convert_tables_to_md(pdf_file_name=file_name, output_dir=user_output_md_path)  # input_root_dir=user_input_pdf_path) TODO: what does this do
                 except:
                     print('[ERROR] Conversion failed for', file_name)
