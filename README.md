@@ -2,6 +2,9 @@
 
 This is a wrapper around the [Python Camelot library](https://camelot-py.readthedocs.io/en/master/) which converts tables in PDF to markdown.
 
+Please install [Ghostscript](https://camelot-py.readthedocs.io/en/master/user/install-deps.html#for-ghostscript), 
+a Camelot dependency.
+
 <br>
 
 #### Convert one PDF file to markdown
@@ -25,3 +28,4 @@ To specify output location:
 `> python table_to_markdown.py '<FILEPATH>/<DIRECTORY>' '<SECOND_FILEPATH>/<SECOND_DIRECTORY>'`
 
 Markdown tables will be saved to `<SECOND_FILEPATH>/<SECOND_DIRECTORY>/<FILENAME>_table_<TABLENUMBER>.md`
+
