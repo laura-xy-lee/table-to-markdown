@@ -4,7 +4,7 @@ Click==7.0
 et-xmlfile==1.0.1
 jdcal==1.4.1
 numpy==1.16.4
-opencv-python==4.1.0.25
+opencv-python==4.1.1.26
 openpyxl==2.6.2
 pdfminer.six==20181108
 pycryptodome==3.8.2
